@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "name": "quiz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HYE0N1127/quiz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HYE0N1127/quiz/issues"
+  },
+  "homepage": "https://github.com/HYE0N1127/quiz#readme"
+}
