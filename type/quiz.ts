@@ -1,0 +1,12 @@
+export type Quiz = {
+  type: "multiple" | "boolean";
+  difficulty: QuizDifficulty;
+  category: string;
+  question: string;
+  correctAnswer: string;
+  incorrectAnswer: string[];
+};
+
+export type QuizType = "multiple" | "boolean";
+
+export type QuizDifficulty = "easy" | "medium" | "hard";
