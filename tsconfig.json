@@ -2,13 +2,13 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "./page",
+    "rootDir": "./",
     "outDir": "./dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "es2015",
-    "target": "es6",
+    "module": "esnext",
+    "target": "esnext",
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
