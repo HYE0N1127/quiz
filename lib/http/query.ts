@@ -9,5 +9,7 @@ export const querify = (
     return prev;
   }, {} as Record<string, string>);
 
-  return new URLSearchParams(filtered).toString();
+  const stringified = new URLSearchParams(filtered).toString();
+
+  return stringified.length === 0 ? "" : `?${stringified}`;
 };
