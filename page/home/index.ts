@@ -1,4 +1,4 @@
-import { SetupComponent } from "../../component/quiz/setup.js";
+import { SetupComponent } from "./../../component/home/setup.js";
 
 class Home {
   constructor() {

@@ -1,5 +1,5 @@
 export type Quiz = {
-  type: "multiple" | "boolean";
+  type: QuizType;
   difficulty: QuizDifficulty;
   category: string;
   question: string;
