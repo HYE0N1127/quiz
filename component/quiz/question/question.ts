@@ -1,18 +1,14 @@
 import { Quiz } from "../../../type/quiz.js";
 import { Component } from "../../component.js";
-import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
-import { BASE_URL } from "../../../constants/url.js";
 import { AnswerComponent } from "../answer/multiple.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
 
 export class QuestionComponent extends Component<{
-  currentIndex: number;
+  current: number;
+  total: number;
   currentQuiz: Quiz | undefined;
-  quizList: Quiz[];
 }> {
-  private readonly repository: QuizRepository;
-
-  constructor() {
+  constructor(current: number, total: number, currentQuiz: Quiz) {
     super(
       `
       <div class="quiz">
@@ -28,38 +24,12 @@ export class QuestionComponent extends Component<{
       </div>
     `,
       {
-        currentIndex: 0,
-        currentQuiz: undefined,
-        quizList: [],
+        current,
+        total,
+        currentQuiz,
       }
     );
-
-    this.repository = new QuizRepository(BASE_URL);
-    this.fetch();
   }
-
-  private fetch = async () => {
-    const query = new URLSearchParams(window.location.search);
-    const payload = Object.fromEntries(query.entries());
-
-    try {
-      const value = await this.repository.getQuizList(payload);
-
-      if (value.length === 0) {
-        alert("문제의 개수가 충분하지 않습니다.");
-        window.history.back();
-      }
-
-      this.state.value = {
-        currentIndex: 0,
-        currentQuiz: value[0]!,
-        quizList: value,
-      };
-    } catch (error) {
-      console.error(error);
-      alert("서버 통신에 실패하였습니다. 새로고침해주세요.");
-    }
-  };
 
   protected render(): void {
     const { currentQuiz } = this.state.value;
