@@ -2,6 +2,7 @@ import { Category } from "../../type/category.js";
 import { Quiz, QuizDifficulty, QuizType } from "../../type/quiz.js";
 import { CategoryResponse, QuizResponse } from "./quiz.repository.types.js";
 import { Repository } from "../repository.js";
+import { QuizDomainMapper } from "./quiz.repository.mapper.js";
 
 export type QuizListPayload = {
   amount?: number;
@@ -16,14 +17,13 @@ export class QuizRepository extends Repository {
   }
 
   public getQuizList = async (payload: QuizListPayload): Promise<Quiz[]> => {
-    const data = await this.get<QuizResponse>("/", {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const data = await this.get<QuizResponse>("/api.php", {
       query: payload,
     });
 
-    return data.results ?? [];
+    const mapped = (data.results ?? []).map((item) => QuizDomainMapper(item));
+
+    return mapped;
   };
 
   public getCategories = async (): Promise<Category[]> => {
