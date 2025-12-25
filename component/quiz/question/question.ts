@@ -1,6 +1,6 @@
 import { Quiz } from "../../../type/quiz.js";
 import { Component } from "../../component.js";
-import { AnswerComponent } from "../answer/multiple.js";
+import { AnswerComponent } from "../answer/answer.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
 
 export class QuestionComponent extends Component<{
