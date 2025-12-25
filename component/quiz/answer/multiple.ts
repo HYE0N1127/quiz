@@ -1,45 +1,23 @@
 import { Component } from "../../component.js";
 import { shuffle } from "../../../util/array.js";
+import { Quiz } from "../../../type/quiz.js";
 
 export class AnswerComponent extends Component<{
-  correctAnswer: string;
-  incorrectAnswers: string[];
+  quiz: Quiz;
 }> {
-  constructor(correctAnswer: string, incorrectAnswers: string[]) {
+  constructor(quiz: Quiz) {
     super(
       `
       <div class="quiz__multiple">
       </div>  
     `,
       {
-        correctAnswer,
-        incorrectAnswers,
+        quiz,
       }
     );
   }
 
-  protected render(): void {
-    const answers = shuffle([
-      this.state.value.correctAnswer,
-      ...this.state.value.incorrectAnswers,
-    ]);
-
-    const choices = this.element.querySelectorAll(".quiz__choice");
-
-    choices.forEach((element, index) => {
-      const answer = answers[index] ?? "";
-      const inner = this.makeChoiceElement(answer, index);
-      element.append(inner);
-
-      (element as HTMLElement).onclick = () => {
-        this.checkAnswer(answer, index);
-      };
-
-      this.element.insertAdjacentElement("beforeend", element);
-    });
-  }
-
-  private checkAnswer = (answer: string, index: number) => {
+  private checkAnswer(answer: string, index: number): void {
     const correctAnswer = this.state.value.correctAnswer;
     const isCorrect = answer === correctAnswer;
     if (isCorrect) {
@@ -53,12 +31,9 @@ export class AnswerComponent extends Component<{
     });
 
     this.element.dispatchEvent(event);
-  };
+  }
 
-  private makeChoiceElement = (
-    answer: string,
-    index: number
-  ): HTMLDivElement => {
+  private makeChoiceElement(answer: string, index: number): HTMLDivElement {
     const element = document.createElement("div");
     element.classList.add("quiz__choice");
     element.setAttribute("data-id", index.toString());
@@ -75,5 +50,21 @@ export class AnswerComponent extends Component<{
     element.append(choiceContentElement);
 
     return element;
-  };
+  }
+
+  protected render(): void {
+    const { correctAnswer, incorrectAnswer } = this.state.value.quiz;
+
+    const answers = [correctAnswer, ...incorrectAnswer];
+
+    answers.forEach((answer, index) => {
+      const element = this.makeChoiceElement(answer, index + 1);
+
+      element.onclick = () => {
+        this.checkAnswer(answer, index);
+      };
+
+      this.element.append(element);
+    });
+  }
 }

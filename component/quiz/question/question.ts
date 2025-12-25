@@ -1,7 +1,9 @@
-import { Quiz } from "./../../type/quiz.js";
-import { Component } from "../component.js";
-import { QuizRepository } from "../../repository/quiz/quiz.repository.js";
-import { BASE_URL } from "../../constants/url.js";
+import { Quiz } from "../../../type/quiz.js";
+import { Component } from "../../component.js";
+import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
+import { BASE_URL } from "../../../constants/url.js";
+import { AnswerComponent } from "../answer/multiple.js";
+import { decodeHtml } from "../../../lib/html/decode.js";
 
 export class QuestionComponent extends Component<{
   currentQuiz: Quiz | undefined;
@@ -32,9 +34,7 @@ export class QuestionComponent extends Component<{
     this.fetch();
   }
 
-  // FIXME: page 부분으로 옮기기 및 페이지에서 quiz index state를 가질 것
   private fetch = async () => {
-    console.log("fetch as question.ts");
     const query = new URLSearchParams(window.location.search);
     const payload = Object.fromEntries(query.entries());
 
@@ -42,10 +42,9 @@ export class QuestionComponent extends Component<{
       const value = await this.repository.getQuizList(payload);
 
       if (value.length === 0) {
-        // TODO 이전페이지로 이동 및 퀴즈 개수가 충분하지 않다는 알림 띄우기
+        alert("문제의 개수가 충분하지 않습니다.");
+        window.history.back();
       }
-
-      console.log(`value ${value}`);
 
       this.state.value = {
         currentQuiz: value[0]!,
@@ -57,15 +56,12 @@ export class QuestionComponent extends Component<{
   };
 
   protected render(): void {
-    console.log("render at question.ts");
     const { currentQuiz } = this.state.value;
     const circleCounts = {
       easy: 1,
       medium: 2,
       hard: 3,
     };
-
-    console.log(currentQuiz);
 
     if (currentQuiz) {
       const titleElement = this.element.querySelector(
@@ -74,12 +70,19 @@ export class QuestionComponent extends Component<{
       const difficultyElement = this.element.querySelector(
         ".quiz__difficulty"
       ) as HTMLDivElement;
+      const answerElement = this.element.querySelector(
+        ".quiz__answer"
+      ) as HTMLDivElement;
+
+      const answerComponent = new AnswerComponent(currentQuiz);
+
+      answerElement.append(answerComponent.element);
 
       this.addDifficultyCircle(
         circleCounts[currentQuiz.difficulty],
         difficultyElement
       );
-      titleElement.textContent = this.decodeHtml(currentQuiz.question);
+      titleElement.textContent = decodeHtml(currentQuiz.question);
     }
   }
 
@@ -92,11 +95,5 @@ export class QuestionComponent extends Component<{
     });
 
     root.append(...elements);
-  }
-
-  private decodeHtml(encoded: string): string {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(encoded, "text/html");
-    return doc.documentElement.textContent;
   }
 }

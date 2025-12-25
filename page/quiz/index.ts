@@ -1,4 +1,4 @@
-import { QuestionComponent } from "../../component/quiz/question.js";
+import { QuestionComponent } from "../../component/quiz/question/question.js";
 
 class QuizPage {
   constructor() {

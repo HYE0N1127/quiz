@@ -15,6 +15,8 @@ export abstract class Component<T> {
     this.element = template.content.firstElementChild;
     this._state = new State<T>(initial);
 
+    this.render.bind(this);
+
     this._state.subscribe(() => {
       this.render();
     });
