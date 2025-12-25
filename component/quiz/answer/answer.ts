@@ -17,14 +17,13 @@ export class AnswerComponent extends Component<{
     );
   }
 
-  private checkAnswer(answer: string, index: number): void {
-    const { correctAnswer } = this.state.value.quiz;
-    const isCorrect = answer === correctAnswer;
-    if (isCorrect) {
-      // TODO: 맞췄다는 초록색 띄워주기
-    } else {
-      // TODO: 클릭한거 빨갛게 만들고 정답 초록색 만들기
-    }
+  private checkAnswer(clicked: number, correct: number): void {
+    const isCorrect = clicked === correct;
+    const elements = this.element.querySelectorAll(".quiz__choice");
+    console.log(isCorrect);
+    console.log(elements);
+
+    this.renderAnswer(clicked, correct);
 
     const event = new CustomEvent("answerSubmit", {
       detail: { isCorrect },
@@ -40,7 +39,7 @@ export class AnswerComponent extends Component<{
   ): HTMLDivElement {
     const element = document.createElement("div");
     element.classList.add("quiz__choice");
-    element.setAttribute("data-id", index.toString());
+    element.setAttribute("data-id", (index + 1).toString());
     element.setAttribute("data-type", type);
 
     const choiceNumberElement = document.createElement("span");
@@ -55,6 +54,22 @@ export class AnswerComponent extends Component<{
     element.append(choiceContentElement);
 
     return element;
+  }
+
+  private renderAnswer(selected: number, correctIndex: number) {
+    const selectedElement = this.element.querySelector(
+      `div[data-id="${selected + 1}"]`
+    );
+    if (selected === correctIndex) {
+      selectedElement?.classList.add("correct");
+    } else {
+      const correctElement = this.element.querySelector(
+        `div[data-id="${correctIndex + 1}"]`
+      );
+
+      selectedElement?.classList.add("incorrect");
+      correctElement?.classList.add("correct");
+    }
   }
 
   protected render(): void {
@@ -75,12 +90,14 @@ export class AnswerComponent extends Component<{
       }
     }
 
-    console.log(answers);
     answers.forEach((answer, index) => {
       const element = this.makeChoiceElement(answer, index, type);
+      const correctIndex = answers.findIndex(
+        (answer) => this.state.value.quiz.correctAnswer === answer
+      );
 
       element.onclick = () => {
-        this.checkAnswer(answer, index);
+        this.checkAnswer(index, correctIndex);
       };
 
       this.element.append(element);
