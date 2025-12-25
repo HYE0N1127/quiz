@@ -104,9 +104,8 @@ body {
 
 .quiz__choice {
   display: flex;
-  flex: 1;
   cursor: pointer;
-  padding: 10px 0px;
+  padding: 10px 4px;
 
   justify-content: center;
   align-items: center;
@@ -114,8 +113,17 @@ body {
   border-radius: 12px;
   border: 0.5px solid #000000;
 
+  word-break: break-all;
+
   font-size: 20px;
   font-weight: 600;
-  width: 100%;
   gap: 10px;
+}
+
+.quiz__choice[data-type="boolean"] {
+  width: 100%;
+}
+
+.quiz__choice[data-type="multiple"] {
+  width: 240px;
 }

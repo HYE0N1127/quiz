@@ -1,9 +1,11 @@
 export const shuffle = <T>(array: T[]): T[] => {
   let copied = [...array];
-  let current = array.length;
+  let current = array.length - 1;
 
   while (current !== 0) {
-    const random = Math.floor(Math.random() * (current - 1));
+    current--;
+
+    const random = Math.floor(Math.random() * current);
 
     [copied[current], copied[random]] = [
       copied[random] as T,

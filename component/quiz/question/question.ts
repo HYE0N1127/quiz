@@ -6,7 +6,9 @@ import { AnswerComponent } from "../answer/multiple.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
 
 export class QuestionComponent extends Component<{
+  currentIndex: number;
   currentQuiz: Quiz | undefined;
+  quizList: Quiz[];
 }> {
   private readonly repository: QuizRepository;
 
@@ -26,7 +28,9 @@ export class QuestionComponent extends Component<{
       </div>
     `,
       {
+        currentIndex: 0,
         currentQuiz: undefined,
+        quizList: [],
       }
     );
 
@@ -47,7 +51,9 @@ export class QuestionComponent extends Component<{
       }
 
       this.state.value = {
+        currentIndex: 0,
         currentQuiz: value[0]!,
+        quizList: value,
       };
     } catch (error) {
       console.error(error);

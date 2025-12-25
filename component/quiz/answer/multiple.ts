@@ -1,6 +1,6 @@
 import { Component } from "../../component.js";
 import { shuffle } from "../../../util/array.js";
-import { Quiz } from "../../../type/quiz.js";
+import { Quiz, QuizType } from "../../../type/quiz.js";
 
 export class AnswerComponent extends Component<{
   quiz: Quiz;
@@ -18,7 +18,7 @@ export class AnswerComponent extends Component<{
   }
 
   private checkAnswer(answer: string, index: number): void {
-    const correctAnswer = this.state.value.correctAnswer;
+    const { correctAnswer } = this.state.value.quiz;
     const isCorrect = answer === correctAnswer;
     if (isCorrect) {
       // TODO: 맞췄다는 초록색 띄워주기
@@ -33,14 +33,19 @@ export class AnswerComponent extends Component<{
     this.element.dispatchEvent(event);
   }
 
-  private makeChoiceElement(answer: string, index: number): HTMLDivElement {
+  private makeChoiceElement(
+    answer: string,
+    index: number,
+    type: QuizType
+  ): HTMLDivElement {
     const element = document.createElement("div");
     element.classList.add("quiz__choice");
     element.setAttribute("data-id", index.toString());
+    element.setAttribute("data-type", type);
 
     const choiceNumberElement = document.createElement("span");
     choiceNumberElement.classList.add("quiz__choice-number");
-    choiceNumberElement.textContent = `${index}. `;
+    choiceNumberElement.textContent = `${index + 1}. `;
 
     const choiceContentElement = document.createElement("span");
     choiceContentElement.classList.add("quiz__choice-content");
@@ -53,12 +58,26 @@ export class AnswerComponent extends Component<{
   }
 
   protected render(): void {
-    const { correctAnswer, incorrectAnswer } = this.state.value.quiz;
+    const { type, correctAnswer, incorrectAnswer } = this.state.value.quiz;
+    const answers: string[] = [];
 
-    const answers = [correctAnswer, ...incorrectAnswer];
+    switch (type) {
+      case "boolean": {
+        answers.push("True");
+        answers.push("False");
+        break;
+      }
 
+      case "multiple": {
+        const shuffled = shuffle([correctAnswer, ...incorrectAnswer]);
+        answers.push(...shuffled);
+        break;
+      }
+    }
+
+    console.log(answers);
     answers.forEach((answer, index) => {
-      const element = this.makeChoiceElement(answer, index + 1);
+      const element = this.makeChoiceElement(answer, index, type);
 
       element.onclick = () => {
         this.checkAnswer(answer, index);
