@@ -60,7 +60,6 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
     try {
       const value = await this.repository.getCategories();
 
-      console.log(`value = ${value}`);
       this.state.value = {
         categories: value,
       };
@@ -107,7 +106,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
         type,
       });
 
-      window.location.href = `../../page/quiz/index.html?${params.toString()}`;
+      window.location.href = `../../page/quiz/index.html${params}`;
     };
   }
 
