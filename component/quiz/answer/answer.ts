@@ -27,6 +27,7 @@ export class AnswerComponent extends Component<{
 
     const event = new CustomEvent("answerSubmit", {
       detail: { isCorrect },
+      bubbles: true,
     });
 
     this.element.dispatchEvent(event);

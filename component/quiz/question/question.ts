@@ -6,7 +6,7 @@ import { decodeHtml } from "../../../lib/html/decode.js";
 export class QuestionComponent extends Component<{
   current: number;
   total: number;
-  currentQuiz: Quiz | undefined;
+  currentQuiz: Quiz;
 }> {
   constructor(current: number, total: number, currentQuiz: Quiz) {
     super(

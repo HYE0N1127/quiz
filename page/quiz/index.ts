@@ -24,6 +24,7 @@ class QuizPage {
 
     this.state.subscribe(() => this.render());
     this.fetch();
+    this.initEventListener();
   }
 
   private fetch = async () => {
@@ -50,6 +51,19 @@ class QuizPage {
     }
   };
 
+  private initEventListener() {
+    const root = document.querySelector("#root") as HTMLBodyElement;
+
+    root.addEventListener("answerSubmit", (e: Event) => {
+      setTimeout(() => {
+        this.state.value = {
+          ...this.state.value,
+          current: (this.state.value.current += 1),
+        };
+      }, 2000);
+    });
+  }
+
   private render = (): void => {
     const { current, total, list } = this.state.value;
     const root = document.querySelector("#root") as HTMLBodyElement;
@@ -59,6 +73,7 @@ class QuizPage {
       list[current - 1]!
     );
 
+    root.innerHTML = "";
     root.append(quizComponent.element);
   };
 }
