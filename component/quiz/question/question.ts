@@ -1,16 +1,18 @@
-import { Quiz } from "../../../type/quiz.js";
+import { TimerComponent } from "./../timer/timer.js";
 import { Component } from "../../component.js";
 import { AnswerComponent } from "../answer/answer.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
 import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
 import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
+import { Quiz } from "../../../model/quiz.js";
 
 export class QuestionComponent extends Component<{
   currentQuiz: Quiz | undefined;
 }> {
   private repository: QuizRepository;
   private service: QuizService;
+  private timer: TimerComponent | undefined = undefined;
 
   constructor() {
     super(
@@ -21,6 +23,8 @@ export class QuestionComponent extends Component<{
             <span class="quiz__title">
             </span>
             <div class="quiz__difficulty">
+            </div>
+            <div class="quiz__timer">
             </div>
           </div>
           <div class="quiz__answer"></div>
@@ -36,7 +40,6 @@ export class QuestionComponent extends Component<{
     this.service = new QuizService([]);
 
     this.fetch();
-    this.initListener();
   }
 
   private fetch = async () => {
@@ -63,14 +66,14 @@ export class QuestionComponent extends Component<{
     }
   };
 
-  private initListener = () => {
-    this.element.addEventListener("answerSubmit", async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+  private onSubmit = async (isCorrect: boolean) => {
+    this.timer?.stop();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      this.state.value = {
-        currentQuiz: this.service.getNextQuiz(),
-      };
-    });
+    this.service.setAnswerCount(isCorrect);
+    this.state.value = {
+      currentQuiz: this.service.getNextQuiz(),
+    };
   };
 
   protected render(): void {
@@ -81,36 +84,48 @@ export class QuestionComponent extends Component<{
       hard: 3,
     };
 
-    // TODO : 제한시간
-
-    if (currentQuiz) {
-      const titleElement = this.element.querySelector(
-        ".quiz__title"
-      ) as HTMLSpanElement;
-      const difficultyElement = this.element.querySelector(
-        ".quiz__difficulty"
-      ) as HTMLDivElement;
-      const answerElement = this.element.querySelector(
-        ".quiz__answer"
-      ) as HTMLDivElement;
-
-      answerElement.innerHTML = "";
-      difficultyElement.innerHTML = "";
-
-      const answerComponent = new AnswerComponent(currentQuiz);
-      answerElement.append(answerComponent.element);
-
-      this.addDifficultyCircle(
-        circleCounts[currentQuiz.difficulty],
-        difficultyElement
-      );
-      titleElement.textContent = decodeHtml(currentQuiz.question);
-    } else {
-      // TODO: 점수 결과 페이지로 넘기기
+    if (currentQuiz == null) {
+      // TODO: 결과페이지 이동
+      return;
     }
+
+    const titleElement = this.element.querySelector(
+      ".quiz__title"
+    ) as HTMLElement;
+    const difficultyElement = this.element.querySelector(
+      ".quiz__difficulty"
+    ) as HTMLElement;
+    const answerElement = this.element.querySelector(
+      ".quiz__answer"
+    ) as HTMLElement;
+    const timerElement = this.element.querySelector(
+      ".quiz__timer"
+    ) as HTMLElement;
+
+    answerElement.innerHTML = "";
+    difficultyElement.innerHTML = "";
+    timerElement.innerHTML = "";
+
+    this.timer = new TimerComponent(10, () => {
+      answerComponent.timeout();
+    });
+
+    const answerComponent = new AnswerComponent(currentQuiz, this.onSubmit);
+
+    timerElement.append(this.timer.element);
+    answerElement.append(answerComponent.element);
+
+    this.addDifficultyCircle(
+      circleCounts[currentQuiz.difficulty],
+      difficultyElement
+    );
+    titleElement.textContent = decodeHtml(currentQuiz.question);
   }
 
-  private addDifficultyCircle(circleCount: number, root: HTMLElement): void {
+  private addDifficultyCircle = (
+    circleCount: number,
+    root: HTMLElement
+  ): void => {
     const elements = Array.from({ length: circleCount }).map(() => {
       const element = document.createElement("div");
       element.classList.add("circle");
@@ -119,5 +134,5 @@ export class QuestionComponent extends Component<{
     });
 
     root.append(...elements);
-  }
+  };
 }

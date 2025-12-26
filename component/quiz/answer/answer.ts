@@ -1,11 +1,14 @@
+import { decodeHtml } from "./../../../lib/html/decode.js";
 import { Component } from "../../component.js";
-import { shuffle } from "../../../util/array.js";
-import { Quiz, QuizType } from "../../../type/quiz.js";
+import { QuizType } from "../../../type/quiz.js";
+import { Quiz } from "../../../model/quiz.js";
 
 export class AnswerComponent extends Component<{
   quiz: Quiz;
 }> {
-  constructor(quiz: Quiz) {
+  private readonly onSubmit: (isCorrect: boolean) => void;
+
+  constructor(quiz: Quiz, onSubmit: (isCorrect: boolean) => void) {
     super(
       `
       <div class="quiz__multiple">
@@ -15,16 +18,16 @@ export class AnswerComponent extends Component<{
         quiz,
       }
     );
+
+    this.onSubmit = onSubmit;
+    this.render();
   }
 
   private checkAnswer(clicked: number, correctIndex: number): void {
+    this.element.style.pointerEvents = "none";
+
+    this.onSubmit(clicked === correctIndex);
     this.renderAnswer(clicked, correctIndex);
-
-    const event = new CustomEvent("answerSubmit", {
-      bubbles: true,
-    });
-
-    this.element.dispatchEvent(event);
   }
 
   private makeChoiceElement(
@@ -43,7 +46,7 @@ export class AnswerComponent extends Component<{
 
     const choiceContentElement = document.createElement("span");
     choiceContentElement.classList.add("quiz__choice-content");
-    choiceContentElement.textContent = answer;
+    choiceContentElement.textContent = decodeHtml(answer);
 
     element.append(choiceNumberElement);
     element.append(choiceContentElement);
@@ -51,7 +54,7 @@ export class AnswerComponent extends Component<{
     return element;
   }
 
-  private renderAnswer(selected: number, correctIndex: number) {
+  private renderAnswer(selected: number = -1, correctIndex: number) {
     const selectedElement = this.element.querySelector(
       `div[data-id="${selected + 1}"]`
     );
@@ -67,29 +70,34 @@ export class AnswerComponent extends Component<{
     }
   }
 
-  protected render(): void {
-    const { type, correctAnswer, incorrectAnswer } = this.state.value.quiz;
-    const answers: string[] = [];
+  public timeout = (): void => {
+    const { correctAnswer } = this.state.value.quiz;
+    const answer = decodeHtml(correctAnswer);
+    let correctIndex = -1;
 
-    switch (type) {
-      case "boolean": {
-        answers.push("True");
-        answers.push("False");
-        break;
-      }
+    const contentElements = this.element.querySelectorAll(
+      ".quiz__choice-content"
+    );
 
-      case "multiple": {
-        const shuffled = shuffle([correctAnswer, ...incorrectAnswer]);
-        answers.push(...shuffled);
-        break;
+    contentElements.forEach((element, index) => {
+      if (element.textContent === answer) {
+        correctIndex = index;
       }
+    });
+
+    if (correctIndex !== -1) {
+      this.checkAnswer(-1, correctIndex);
     }
+  };
+
+  protected render(): void {
+    this.element.innerHTML = "";
+
+    const { type, answers } = this.state.value.quiz;
 
     answers.forEach((answer, index) => {
       const element = this.makeChoiceElement(answer, index, type);
-      const correctIndex = answers.findIndex(
-        (answer) => this.state.value.quiz.correctAnswer === answer
-      );
+      const correctIndex = answers.findIndex(this.state.value.quiz.isCorrect);
 
       element.onclick = () => {
         this.checkAnswer(index, correctIndex);

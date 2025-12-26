@@ -1,5 +1,6 @@
 import { QuestionComponent } from "../../component/quiz/question/question.js";
 
+// TODO: render 내부 구현을 바깥으로 빼기
 class QuizPage {
   constructor() {
     this.render();

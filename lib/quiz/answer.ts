@@ -1,33 +1,45 @@
-import { Quiz } from "../../type/quiz.js";
+import { Quiz } from "../../model/quiz.js";
 
 export class QuizService {
   private _quizzes: Quiz[];
-  private _ordinal: number;
+  private _order: number;
+  private _correctCount: number;
+  private _incorrectCount: number;
 
   constructor(_quizzes: Quiz[]) {
     this._quizzes = _quizzes;
-    this._ordinal = 0;
+    this._order = 0;
+    this._correctCount = 0;
+    this._incorrectCount = 0;
   }
 
   public set quizzes(value: Quiz[]) {
     this._quizzes = value;
   }
 
-  public get ordinal(): number {
-    return this._ordinal + 1;
+  public get order(): number {
+    return this._order + 1;
+  }
+
+  public setAnswerCount(isCorrect: boolean) {
+    if (isCorrect) {
+      this._correctCount += 1;
+    } else {
+      this._incorrectCount += 1;
+    }
   }
 
   public getNextQuiz(): Quiz | undefined {
-    this._ordinal += 1;
+    this._order += 1;
 
-    if (this.ordinal === this._quizzes.length) {
+    if (this._order === this._quizzes.length) {
       return undefined;
     }
 
-    return this._quizzes[this.ordinal];
+    return this._quizzes[this._order];
   }
 
   public getCurrentQuiz(): Quiz {
-    return this._quizzes[this._ordinal]!;
+    return this._quizzes[this._order]!;
   }
 }
