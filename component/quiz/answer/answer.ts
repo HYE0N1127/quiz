@@ -17,16 +17,10 @@ export class AnswerComponent extends Component<{
     );
   }
 
-  private checkAnswer(clicked: number, correct: number): void {
-    const isCorrect = clicked === correct;
-    const elements = this.element.querySelectorAll(".quiz__choice");
-    console.log(isCorrect);
-    console.log(elements);
-
-    this.renderAnswer(clicked, correct);
+  private checkAnswer(clicked: number, correctIndex: number): void {
+    this.renderAnswer(clicked, correctIndex);
 
     const event = new CustomEvent("answerSubmit", {
-      detail: { isCorrect },
       bubbles: true,
     });
 
