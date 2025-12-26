@@ -1,8 +1,8 @@
 import { Category } from "../../type/category.js";
-import { Quiz, QuizDifficulty, QuizType } from "../../type/quiz.js";
+import { QuizDifficulty, QuizType } from "../../type/quiz.js";
 import { CategoryResponse, QuizResponse } from "./quiz.repository.types.js";
 import { Repository } from "../repository.js";
-import { QuizDomainMapper } from "./quiz.repository.mapper.js";
+import { Quiz } from "../../model/quiz.js";
 
 export type QuizListPayload = {
   amount?: number;
@@ -21,7 +21,7 @@ export class QuizRepository extends Repository {
       query: payload,
     });
 
-    const mapped = (data.results ?? []).map((item) => QuizDomainMapper(item));
+    const mapped = (data.results ?? []).map((item) => new Quiz(item));
 
     return mapped;
   };
