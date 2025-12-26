@@ -7,7 +7,7 @@ import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
 
-export class QuestionComponent extends Component<{
+export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
 }> {
   private repository: QuizRepository;
