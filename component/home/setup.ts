@@ -1,6 +1,5 @@
 import { BASE_URL } from "../../constants/url.js";
-import { movePage } from "../../lib/html/alert.js";
-import { querify } from "../../lib/http/query.js";
+import { navigate } from "../../lib/html/route.js";
 import { QuizRepository } from "../../repository/quiz/quiz.repository.js";
 import { Category } from "../../type/category.js";
 import { Component } from "../component.js";
@@ -16,14 +15,14 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
           <div class="quiz__selector">
             <label for="quiz__category" class="quiz__type">Category</label>
             <select id="quiz__category" name="category" class="quiz__options">
-              <option value="any">Any</option>
+              <option value="">Any</option>
             </select>
           </div>
 
           <div class="quiz__selector">
             <label for="quiz__type" class="quiz__type">Type</label>
             <select id="quiz__type" name="type" class="quiz__options">
-              <option value="any">Any</option>
+              <option value="">Any</option>
               <option value="multiple">Multiple Choice</option>
               <option value="boolean">True / False</option>
             </select>
@@ -32,7 +31,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
           <div class="quiz__selector">
             <label for="quiz__difficulty" class="quiz__type">Difficulty</label>
             <select id="quiz__difficulty" name="difficulty" class="quiz__options" id="quiz__options-difficulty">
-              <option value="any">Any</option>
+              <option value="">Any</option>
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
@@ -88,26 +87,10 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
 
       const formData = new FormData(form);
 
-      const amount = Number(formData.get("amount")?.toString()) || 10;
-
-      const categoryRaw = formData.get("category")?.toString();
-      const category =
-        categoryRaw && categoryRaw !== "any" ? Number(categoryRaw) : "";
-
-      const difficultyRaw = formData.get("difficulty")?.toString() ?? "";
-      const difficulty = difficultyRaw === "any" ? "" : difficultyRaw;
-
-      const typeRaw = formData.get("type")?.toString() ?? "";
-      const type = typeRaw === "any" ? "" : typeRaw;
-
-      const params = querify({
-        amount,
-        category,
-        difficulty,
-        type,
+      navigate({
+        route: "quiz",
+        query: Object.fromEntries(formData.entries()) as Record<string, string>,
       });
-
-      movePage(`../../page/quiz/index.html${params}`);
     };
   }
 

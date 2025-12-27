@@ -1,4 +1,4 @@
-import { alertAndMovePage, movePage } from "../../lib/html/alert.js";
+import { navigate } from "../../lib/html/route.js";
 import { calculateScore } from "../../lib/quiz/result.js";
 import { Component } from "../component.js";
 
@@ -31,10 +31,6 @@ export class ResultPageComponent extends Component<{
     console.log(payload);
 
     if (payload.correctAnswer == null || payload.incorrectAnswer == null) {
-      alertAndMovePage(
-        "올바르지 않은 접근입니다.",
-        "../../page/home/index.html"
-      );
     }
 
     this.state.value = {
@@ -58,8 +54,9 @@ export class ResultPageComponent extends Component<{
 
     scoreElement.textContent = calculateScore(correctAnswer, incorrectAnswer);
     countElement.textContent = `정답 갯수: ${correctAnswer}개, 오답 갯수: ${incorrectAnswer}개`;
+
     backButtonElement.onclick = () => {
-      movePage("../../page/home/index.html");
+      navigate({ route: "home" });
     };
   }
 }

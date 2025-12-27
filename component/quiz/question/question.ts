@@ -6,9 +6,7 @@ import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
 import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
-import { querify } from "../../../lib/http/query.js";
-import { alertAndMovePage, movePage } from "../../../lib/html/alert.js";
-import { clear } from "../../../lib/html/clear.js";
+import { navigate } from "../../../lib/html/route.js";
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
@@ -54,10 +52,7 @@ export class QuizPageComponent extends Component<{
       const value = await this.repository.getQuizList(payload);
 
       if (value.length === 0) {
-        alertAndMovePage(
-          "알 수 없는 에러가 발생하였습니다.",
-          "../../page/home/index.html"
-        );
+        throw new Error("Failed to fetch quiz");
       }
 
       this.service.quizzes = value;
@@ -67,10 +62,9 @@ export class QuizPageComponent extends Component<{
       };
     } catch (error) {
       console.error(error);
-      alertAndMovePage(
-        "알 수 없는 에러가 발생하였습니다.",
-        "../../page/home/index.html"
-      );
+
+      alert("알 수 없는 에러가 발생하였습니다.");
+      navigate({ route: "home" });
     }
   };
 
@@ -93,12 +87,13 @@ export class QuizPageComponent extends Component<{
     };
 
     if (currentQuiz == null) {
-      const query = querify({
-        correctAnswer: this.service.correctCount,
-        incorrectAnswer: this.service.incorrectCount,
+      navigate({
+        route: "result",
+        query: {
+          correctAnswer: this.service.correctCount,
+          incorrectAnswer: this.service.incorrectCount,
+        },
       });
-
-      movePage(`../../page/result/index.html${query}`);
       return;
     }
 
@@ -118,7 +113,9 @@ export class QuizPageComponent extends Component<{
       ".quiz__order"
     ) as HTMLElement;
 
-    clear([answerElement, difficultyElement, timerElement]);
+    [answerElement, difficultyElement, timerElement].forEach((element) => {
+      element.innerHTML = "";
+    });
 
     this.timer = new TimerComponent(10, () => {
       answerComponent.timeout();
