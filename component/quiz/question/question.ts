@@ -3,10 +3,15 @@ import { Component } from "../../component.js";
 import { AnswerComponent } from "../answer/answer.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
 import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
-import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
 import { navigate } from "../../../lib/html/route.js";
+
+const CIRCLES = {
+  easy: 1,
+  medium: 2,
+  hard: 3,
+} as const;
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
@@ -78,11 +83,6 @@ export class QuizPageComponent extends Component<{
 
   protected render(): void {
     const { currentQuiz } = this.state.value;
-    const circleCounts = {
-      easy: 1,
-      medium: 2,
-      hard: 3,
-    };
 
     if (currentQuiz == null) {
       navigate({
@@ -128,7 +128,7 @@ export class QuizPageComponent extends Component<{
     answerElement.append(answerComponent.element);
 
     this.addDifficultyCircle(
-      circleCounts[currentQuiz.difficulty],
+      CIRCLES[currentQuiz.difficulty],
       difficultyElement
     );
 
