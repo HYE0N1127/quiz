@@ -18,8 +18,6 @@ export abstract class Component<T> {
     this._state.subscribe(() => {
       this.render();
     });
-
-    this.render();
   }
 
   public get state(): State<T> {

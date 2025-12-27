@@ -6,6 +6,7 @@ import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
 import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
+import { querify } from "../../../lib/http/query.js";
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
@@ -85,7 +86,12 @@ export class QuizPageComponent extends Component<{
     };
 
     if (currentQuiz == null) {
-      // TODO: 결과페이지 이동
+      const query = querify({
+        correctAnswer: this.service.correctCount,
+        incorrectAnswer: this.service.incorrectCount,
+      });
+
+      window.location.href = `../../page/result/index.html${query}`;
       return;
     }
 

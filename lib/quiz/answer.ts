@@ -13,12 +13,20 @@ export class QuizService {
     this._incorrectCount = 0;
   }
 
-  public set quizzes(value: Quiz[]) {
-    this._quizzes = value;
-  }
-
   public get order(): number {
     return this._order + 1;
+  }
+
+  public get correctCount(): number {
+    return this._correctCount;
+  }
+
+  public get incorrectCount(): number {
+    return this._incorrectCount;
+  }
+
+  public set quizzes(value: Quiz[]) {
+    this._quizzes = value;
   }
 
   public setAnswerCount(isCorrect: boolean) {
