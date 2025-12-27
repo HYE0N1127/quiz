@@ -19,33 +19,48 @@ export class TimerComponent extends Component<{
     this.render();
   }
 
-  private start(): void {
-    const { duration, callback } = this.state.value;
-    const bar = this.element.querySelector(".quiz__timer-bar") as HTMLElement;
-    const frequency = 100;
-    let currentTime = 0;
-
-    this.interval = window.setInterval(async () => {
-      if (this.interval === undefined) return;
-
-      currentTime += frequency / 1000;
-      const percent = Math.min(frequency, (currentTime / duration) * 100);
-
-      bar.style.width = `${percent}%`;
-
-      if (currentTime >= duration) {
-        this.stop();
-        callback();
-      }
-    }, frequency);
-  }
-
   public stop(): void {
-    window.clearInterval(this.interval);
+    clearInterval(this.interval);
     this.interval = undefined;
   }
 
+  private start({
+    duration,
+    ms,
+    onProgress,
+    onEnd,
+  }: {
+    duration: number;
+    ms: number;
+    onProgress: (progress: number) => void;
+    onEnd: () => void;
+  }) {
+    let time = 0;
+
+    this.interval = setInterval(() => {
+      time += ms / 1000;
+
+      onProgress(Math.min(100, (time / duration) * 100));
+
+      if (time >= duration) {
+        this.stop();
+        onEnd();
+      }
+    }, ms);
+  }
+
   protected render(): void {
-    this.start();
+    const { duration, callback } = this.state.value;
+
+    const bar = this.element.querySelector(".quiz__timer-bar") as HTMLElement;
+
+    this.start({
+      duration,
+      ms: 100,
+      onProgress: (progress) => {
+        bar.style.width = `${progress}%`;
+      },
+      onEnd: callback,
+    });
   }
 }
