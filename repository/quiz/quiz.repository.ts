@@ -3,6 +3,7 @@ import { QuizDifficulty, QuizType } from "../../type/quiz.js";
 import { CategoryResponse, QuizResponse } from "./quiz.repository.types.js";
 import { Repository } from "../repository.js";
 import { Quiz } from "../../model/quiz.js";
+import { BASE_URL } from "../../constants/url.js";
 
 export type QuizListPayload = {
   amount?: number;
@@ -12,8 +13,8 @@ export type QuizListPayload = {
 };
 
 export class QuizRepository extends Repository {
-  constructor(baseUrl: string) {
-    super(baseUrl);
+  constructor() {
+    super(BASE_URL);
   }
 
   public getQuizList = async (payload: QuizListPayload): Promise<Quiz[]> => {

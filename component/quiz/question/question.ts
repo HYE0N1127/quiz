@@ -37,7 +37,7 @@ export class QuizPageComponent extends Component<{
       }
     );
 
-    this.repository = new QuizRepository(BASE_URL);
+    this.repository = new QuizRepository();
     this.service = new QuizService([]);
 
     this.fetch();

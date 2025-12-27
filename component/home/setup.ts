@@ -52,7 +52,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
       }
     );
 
-    this.repository = new QuizRepository(BASE_URL);
+    this.repository = new QuizRepository();
     this.fetch();
   }
 
