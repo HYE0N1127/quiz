@@ -24,5 +24,17 @@ export abstract class Component<T> {
     return this._state;
   }
 
+  public attachTo(
+    parent: HTMLElement,
+    position: InsertPosition = "beforeend"
+  ): void {
+    if (this.element == null) {
+      console.error("don`t use attachTo() before this.element initializing");
+      return;
+    }
+
+    parent.insertAdjacentElement(position, this.element);
+  }
+
   protected abstract render(): void;
 }

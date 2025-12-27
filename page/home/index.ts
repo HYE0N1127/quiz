@@ -1,10 +1,10 @@
 import { SetupComponent } from "./../../component/home/setup.js";
 
 const render = () => {
-  const root = document.querySelector("#root");
+  const root = document.querySelector("#root") as HTMLBodyElement;
   const setupForm = new SetupComponent();
 
-  root?.append(setupForm.element);
+  setupForm.attachTo(root);
 };
 
 render();

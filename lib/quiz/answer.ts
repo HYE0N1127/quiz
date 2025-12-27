@@ -25,6 +25,10 @@ export class QuizService {
     return this._incorrectCount;
   }
 
+  public get amount(): number {
+    return this._quizzes.length;
+  }
+
   public set quizzes(value: Quiz[]) {
     this._quizzes = value;
   }

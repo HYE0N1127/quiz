@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../constants/url.js";
+import { movePage } from "../../lib/html/alert.js";
 import { querify } from "../../lib/http/query.js";
 import { QuizRepository } from "../../repository/quiz/quiz.repository.js";
 import { Category } from "../../type/category.js";
@@ -106,7 +107,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
         type,
       });
 
-      window.location.href = `../../page/quiz/index.html${params}`;
+      movePage(`../../page/quiz/index.html${params}`);
     };
   }
 

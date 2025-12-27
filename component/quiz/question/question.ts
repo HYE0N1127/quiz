@@ -7,6 +7,8 @@ import { BASE_URL } from "../../../constants/url.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
 import { querify } from "../../../lib/http/query.js";
+import { alertAndMovePage, movePage } from "../../../lib/html/alert.js";
+import { clear } from "../../../lib/html/clear.js";
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
@@ -51,8 +53,10 @@ export class QuizPageComponent extends Component<{
       const value = await this.repository.getQuizList(payload);
 
       if (value.length === 0) {
-        alert("문제의 개수가 충분하지 않습니다.");
-        window.history.back();
+        alertAndMovePage(
+          "알 수 없는 에러가 발생하였습니다.",
+          "../../page/home/index.html"
+        );
       }
 
       this.service.quizzes = value;
@@ -62,8 +66,10 @@ export class QuizPageComponent extends Component<{
       };
     } catch (error) {
       console.error(error);
-      alert("서버 통신에 실패하였습니다.");
-      window.history.back();
+      alertAndMovePage(
+        "알 수 없는 에러가 발생하였습니다.",
+        "../../page/home/index.html"
+      );
     }
   };
 
@@ -91,7 +97,7 @@ export class QuizPageComponent extends Component<{
         incorrectAnswer: this.service.incorrectCount,
       });
 
-      window.location.href = `../../page/result/index.html${query}`;
+      movePage(`../../page/result/index.html${query}`);
       return;
     }
 
@@ -107,10 +113,11 @@ export class QuizPageComponent extends Component<{
     const timerElement = this.element.querySelector(
       ".quiz__timer"
     ) as HTMLElement;
+    const orderElement = this.element.querySelector(
+      ".quiz__order"
+    ) as HTMLElement;
 
-    answerElement.innerHTML = "";
-    difficultyElement.innerHTML = "";
-    timerElement.innerHTML = "";
+    clear([answerElement, difficultyElement, timerElement]);
 
     this.timer = new TimerComponent(10, () => {
       answerComponent.timeout();
@@ -125,6 +132,7 @@ export class QuizPageComponent extends Component<{
       circleCounts[currentQuiz.difficulty],
       difficultyElement
     );
+
     titleElement.textContent = decodeHtml(currentQuiz.question);
   }
 
