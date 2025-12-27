@@ -29,6 +29,7 @@ export class QuizPageComponent extends Component<{
             </div>
             <div class="quiz__timer">
             </div>
+            <div class="quiz__order"></div>
           </div>
           <div class="quiz__answer"></div>
         </div>
@@ -132,6 +133,8 @@ export class QuizPageComponent extends Component<{
       circleCounts[currentQuiz.difficulty],
       difficultyElement
     );
+
+    orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
 
     titleElement.textContent = decodeHtml(currentQuiz.question);
   }
