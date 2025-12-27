@@ -13,7 +13,6 @@ export class QuizPageComponent extends Component<{
 }> {
   private repository: QuizRepository;
   private service: QuizService;
-  private timer: TimerComponent | undefined = undefined;
 
   constructor() {
     super(
@@ -69,7 +68,6 @@ export class QuizPageComponent extends Component<{
   };
 
   private onSubmit = async (isCorrect: boolean) => {
-    this.timer?.stop();
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     this.service.setAnswerCount(isCorrect);
@@ -117,13 +115,16 @@ export class QuizPageComponent extends Component<{
       element.innerHTML = "";
     });
 
-    this.timer = new TimerComponent(10, () => {
+    const timer = new TimerComponent(10, () => {
       answerComponent.timeout();
     });
 
-    const answerComponent = new AnswerComponent(currentQuiz, this.onSubmit);
+    const answerComponent = new AnswerComponent(currentQuiz, (isCorrect) => {
+      timer.stop();
+      this.onSubmit(isCorrect);
+    });
 
-    timerElement.append(this.timer.element);
+    timerElement.append(timer.element);
     answerElement.append(answerComponent.element);
 
     this.addDifficultyCircle(
