@@ -11,7 +11,7 @@ export class ResultPageComponent extends Component<{
       <div class="result">
         <span class="result__score"></span>
         <span class="result__count"></span>
-        <button class="result__back">돌아가기</button>
+        <button class="result__back">다른 문제 풀러가기</button>
       </div>
     `,
       {
