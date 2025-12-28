@@ -90,7 +90,7 @@ export class AnswerComponent extends Component<{
     }
   };
 
-  protected render(): void {
+  public render(): void {
     this.element.innerHTML = "";
 
     const { type, answers } = this.state.value.quiz;

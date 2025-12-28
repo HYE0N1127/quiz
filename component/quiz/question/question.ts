@@ -6,6 +6,7 @@ import { QuizRepository } from "../../../repository/quiz/quiz.repository.js";
 import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
 import { navigate } from "../../../lib/html/route.js";
+import { Timer } from "../../../lib/timer/timer.js";
 
 const CIRCLES = {
   easy: 1,
@@ -18,6 +19,7 @@ export class QuizPageComponent extends Component<{
 }> {
   private repository: QuizRepository;
   private service: QuizService;
+  private timer: Timer | undefined;
 
   constructor() {
     super(
@@ -44,11 +46,9 @@ export class QuizPageComponent extends Component<{
 
     this.repository = new QuizRepository();
     this.service = new QuizService([]);
-
-    this.fetch();
   }
 
-  private fetch = async () => {
+  public componentDidMount = async () => {
     const query = new URLSearchParams(window.location.search);
     const payload = Object.fromEntries(query.entries());
 
@@ -73,6 +73,7 @@ export class QuizPageComponent extends Component<{
   };
 
   private onSubmit = async (isCorrect: boolean) => {
+    this.timer?.stop();
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     this.service.setAnswerCount(isCorrect);
@@ -81,10 +82,8 @@ export class QuizPageComponent extends Component<{
     };
   };
 
-  protected render(): void {
-    const { currentQuiz } = this.state.value;
-
-    if (currentQuiz == null) {
+  public render(): void {
+    if (this.service.isFinish) {
       navigate({
         route: "result",
         query: {
@@ -95,59 +94,88 @@ export class QuizPageComponent extends Component<{
       return;
     }
 
-    const titleElement = this.element.querySelector(
-      ".quiz__title"
-    ) as HTMLElement;
-    const difficultyElement = this.element.querySelector(
-      ".quiz__difficulty"
-    ) as HTMLElement;
-    const answerElement = this.element.querySelector(
-      ".quiz__answer"
-    ) as HTMLElement;
-    const timerElement = this.element.querySelector(
-      ".quiz__timer"
-    ) as HTMLElement;
-    const orderElement = this.element.querySelector(
-      ".quiz__order"
-    ) as HTMLElement;
+    const { currentQuiz } = this.state.value;
 
-    [answerElement, difficultyElement, timerElement].forEach((element) => {
-      element.innerHTML = "";
-    });
+    if (currentQuiz) {
+      this.timer?.stop();
 
-    const timer = new TimerComponent(10, () => {
-      answerComponent.timeout();
-    });
+      const timerComponent = this.renderTimer();
+      const answerComponent = this.renderAnswer(currentQuiz, (isCorrect) => {
+        this.timer?.stop();
+        this.onSubmit(isCorrect);
+      });
 
-    const answerComponent = new AnswerComponent(currentQuiz, (isCorrect) => {
-      timer.stop();
-      this.onSubmit(isCorrect);
-    });
+      this.timer = new Timer(
+        10,
+        100,
+        (percent: number) => {
+          timerComponent.update(percent);
+        },
+        () => {
+          answerComponent.timeout();
+        }
+      );
+      this.timer?.start();
 
-    timerElement.append(timer.element);
-    answerElement.append(answerComponent.element);
+      this.renderDifficulty(currentQuiz);
 
-    this.addDifficultyCircle(
-      CIRCLES[currentQuiz.difficulty],
-      difficultyElement
-    );
+      const titleElement = this.element.querySelector(
+        ".quiz__title"
+      ) as HTMLElement;
+      const orderElement = this.element.querySelector(
+        ".quiz__order"
+      ) as HTMLElement;
 
-    orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
+      orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
 
-    titleElement.textContent = decodeHtml(currentQuiz.question);
+      titleElement.textContent = decodeHtml(currentQuiz.question);
+    }
   }
 
-  private addDifficultyCircle = (
-    circleCount: number,
-    root: HTMLElement
-  ): void => {
-    const elements = Array.from({ length: circleCount }).map(() => {
+  private renderTimer = () => {
+    const element = this.element.querySelector(".quiz__timer") as HTMLElement;
+
+    element.innerHTML = "";
+
+    const timerComponent = new TimerComponent();
+
+    timerComponent.attachTo(element);
+
+    return timerComponent;
+  };
+
+  private renderAnswer = (
+    quiz: Quiz,
+    callback: (isCorrect: boolean) => void
+  ) => {
+    const element = this.element.querySelector(".quiz__answer") as HTMLElement;
+
+    element.innerHTML = "";
+
+    const answer = new AnswerComponent(quiz, callback);
+
+    answer.attachTo(element);
+
+    return answer;
+  };
+
+  private renderDifficulty = (quiz: Quiz): void => {
+    const element = this.element.querySelector(
+      ".quiz__difficulty"
+    ) as HTMLElement;
+
+    element.innerHTML = "";
+
+    const count = CIRCLES[quiz.difficulty];
+
+    const elements = Array.from({ length: count }).map(() => {
       const element = document.createElement("div");
+
       element.classList.add("circle");
 
       return element;
     });
 
-    root.append(...elements);
+    element.append(...elements);
   };
 }

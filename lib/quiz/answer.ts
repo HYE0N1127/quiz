@@ -1,10 +1,12 @@
 import { Quiz } from "../../model/quiz.js";
 
+// FIXME:  QuizService가 할 수 있는 일이 더 많을 것 같음.
 export class QuizService {
   private _quizzes: Quiz[];
   private _order: number;
   private _correctCount: number;
   private _incorrectCount: number;
+  private _isLoaded: boolean = false;
 
   constructor(_quizzes: Quiz[]) {
     this._quizzes = _quizzes;
@@ -29,8 +31,16 @@ export class QuizService {
     return this._quizzes.length;
   }
 
+  public get isFinish(): boolean {
+    console.log(this._quizzes.length);
+    console.log(this._order + 1);
+    return this._isLoaded && this._quizzes.length < this._order + 1;
+  }
+
   public set quizzes(value: Quiz[]) {
     this._quizzes = value;
+    this._isLoaded = true;
+    this._order = 0;
   }
 
   public setAnswerCount(isCorrect: boolean) {

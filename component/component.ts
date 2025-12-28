@@ -1,8 +1,15 @@
 import { State } from "../lib/state/state.js";
 
-export abstract class Component<T> {
+interface ComponentLifeCycle {
+  componentDidMount?(): void;
+
+  render?(): void;
+}
+
+export interface Component<T> extends ComponentLifeCycle {}
+export class Component<T> {
   private _state: State<T>;
-  public element: HTMLElement;
+  protected element: HTMLElement;
 
   constructor(htmlString: string, initial: T) {
     const template: HTMLTemplateElement = document.createElement("template");
@@ -16,8 +23,13 @@ export abstract class Component<T> {
     this._state = new State<T>(initial);
 
     this._state.subscribe(() => {
-      this.render();
+      this.render?.();
     });
+
+    setTimeout(() => {
+      this.componentDidMount?.();
+      this.render?.();
+    }, 0);
   }
 
   public get state(): State<T> {
@@ -28,13 +40,6 @@ export abstract class Component<T> {
     parent: HTMLElement,
     position: InsertPosition = "beforeend"
   ): void {
-    if (this.element == null) {
-      console.error("don`t use attachTo() before this.element initializing");
-      return;
-    }
-
     parent.insertAdjacentElement(position, this.element);
   }
-
-  protected abstract render(): void;
 }

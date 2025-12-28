@@ -1,4 +1,3 @@
-import { BASE_URL } from "../../constants/url.js";
 import { navigate } from "../../lib/html/route.js";
 import { QuizRepository } from "../../repository/quiz/quiz.repository.js";
 import { Category } from "../../type/category.js";
@@ -53,10 +52,9 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
     );
 
     this.repository = new QuizRepository();
-    this.fetch();
   }
 
-  private fetch = async () => {
+  public componentDidMount = async () => {
     try {
       const value = await this.repository.getCategories();
 
@@ -69,7 +67,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
     }
   };
 
-  protected render(): void {
+  public render(): void {
     const { categories } = this.state.value;
     const form = this.element.querySelector(".quiz__form") as HTMLFormElement;
     const categoryElement = this.element.querySelector(
