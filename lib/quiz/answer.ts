@@ -32,8 +32,6 @@ export class QuizService {
   }
 
   public get isFinish(): boolean {
-    console.log(this._quizzes.length);
-    console.log(this._order + 1);
     return this._isLoaded && this._quizzes.length < this._order + 1;
   }
 

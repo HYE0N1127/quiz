@@ -1,6 +1,6 @@
 import { Component } from "../../component.js";
 
-export class TimerComponent extends Component<void> {
+export class ProgressComponent extends Component<void> {
   constructor() {
     super(
       `

@@ -1,4 +1,3 @@
-import { TimerComponent } from "./../timer/timer.js";
 import { Component } from "../../component.js";
 import { AnswerComponent } from "../answer/answer.js";
 import { decodeHtml } from "../../../lib/html/decode.js";
@@ -7,6 +6,7 @@ import { QuizService } from "../../../lib/quiz/answer.js";
 import { Quiz } from "../../../model/quiz.js";
 import { navigate } from "../../../lib/html/route.js";
 import { Timer } from "../../../lib/timer/timer.js";
+import { ProgressComponent } from "../timer/progress.js";
 
 const CIRCLES = {
   easy: 1,
@@ -19,7 +19,6 @@ export class QuizPageComponent extends Component<{
 }> {
   private repository: QuizRepository;
   private service: QuizService;
-  private timer: Timer | undefined;
 
   constructor() {
     super(
@@ -73,7 +72,6 @@ export class QuizPageComponent extends Component<{
   };
 
   private onSubmit = async (isCorrect: boolean) => {
-    this.timer?.stop();
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     this.service.setAnswerCount(isCorrect);
@@ -97,25 +95,22 @@ export class QuizPageComponent extends Component<{
     const { currentQuiz } = this.state.value;
 
     if (currentQuiz) {
-      this.timer?.stop();
-
-      const timerComponent = this.renderTimer();
+      const timerUpdate = this.renderTimer();
       const answerComponent = this.renderAnswer(currentQuiz, (isCorrect) => {
-        this.timer?.stop();
+        timer.stop();
         this.onSubmit(isCorrect);
       });
 
-      this.timer = new Timer(
+      const timer = new Timer(
         10,
         100,
         (percent: number) => {
-          timerComponent.update(percent);
+          timerUpdate(percent);
         },
         () => {
           answerComponent.timeout();
         }
       );
-      this.timer?.start();
 
       this.renderDifficulty(currentQuiz);
 
@@ -129,6 +124,8 @@ export class QuizPageComponent extends Component<{
       orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
 
       titleElement.textContent = decodeHtml(currentQuiz.question);
+
+      timer.start();
     }
   }
 
@@ -137,11 +134,11 @@ export class QuizPageComponent extends Component<{
 
     element.innerHTML = "";
 
-    const timerComponent = new TimerComponent();
+    const timerComponent = new ProgressComponent();
 
     timerComponent.attachTo(element);
 
-    return timerComponent;
+    return (percent: number) => timerComponent.update(percent);
   };
 
   private renderAnswer = (
