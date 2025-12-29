@@ -27,11 +27,10 @@ export class Component<T> {
     });
 
     this.render?.();
-  }
 
-  protected mount() {
-    this.render?.();
-    this.componentDidMount?.();
+    setTimeout(() => {
+      this.componentDidMount?.();
+    }, 0);
   }
 
   public get state(): State<T> {

@@ -48,8 +48,6 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
         categories: [],
       }
     );
-
-    this.mount();
   }
 
   public componentDidMount = async () => {

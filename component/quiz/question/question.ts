@@ -51,8 +51,6 @@ export class QuizPageComponent extends Component<{
 
     this.service = new QuizService([]);
     this.timer = new Timer(10, 100);
-
-    this.mount();
   }
 
   public componentDidMount = async () => {
