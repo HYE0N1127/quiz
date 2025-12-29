@@ -17,8 +17,8 @@ const CIRCLES = {
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
+  isLoading?: boolean;
 }> {
-  private repository: QuizRepository;
   private service: QuizService;
   private timer: Timer;
 
@@ -26,7 +26,10 @@ export class QuizPageComponent extends Component<{
     super(
       `
       <div class="quiz">
-        <div class="quiz__content">
+        <div class="loading__container">
+          <div class="loading__progress-bar"></div>
+        </div>
+        <div class="quiz__content none">
           <div class="quiz__question">
             <span class="quiz__title">
             </span>
@@ -42,12 +45,14 @@ export class QuizPageComponent extends Component<{
     `,
       {
         currentQuiz: undefined,
+        isLoading: true,
       }
     );
 
-    this.repository = new QuizRepository();
     this.service = new QuizService([]);
     this.timer = new Timer(10, 100);
+
+    this.mount();
   }
 
   public componentDidMount = async () => {
@@ -55,7 +60,7 @@ export class QuizPageComponent extends Component<{
     const payload = Object.fromEntries(query.entries());
 
     try {
-      const value = await this.repository.getQuizList(payload);
+      const value = await new QuizRepository().getQuizList(payload);
 
       if (value.length === 0) {
         throw new Error("Failed to fetch quiz");
@@ -64,6 +69,7 @@ export class QuizPageComponent extends Component<{
       this.service.quizzes = value;
 
       this.state.value = {
+        isLoading: false,
         currentQuiz: this.service.getCurrentQuiz(),
       };
     } catch (error) {
@@ -84,22 +90,39 @@ export class QuizPageComponent extends Component<{
   };
 
   public render(): void {
-    this.timer.stop();
+    if (this.timer) {
+      this.timer.stop();
+    }
 
-    if (this.service.isFinish) {
-      navigate<QuizResult>({
-        route: "result",
-        state: {
-          correctAnswer: this.service.correctCount,
-          incorrectAnswer: this.service.incorrectCount,
-        },
-      });
+    const { currentQuiz, isLoading } = this.state.value;
+
+    const loadingOverlay = this.element.querySelector(
+      ".loading__container"
+    ) as HTMLElement;
+
+    const contentElement = this.element.querySelector(
+      ".quiz__content"
+    ) as HTMLElement;
+
+    loadingOverlay.classList.toggle("none", !isLoading);
+    contentElement.classList.toggle("none", isLoading);
+
+    if (isLoading) {
       return;
     }
 
-    const { currentQuiz } = this.state.value;
-
     if (currentQuiz) {
+      if (this.service.isFinish) {
+        navigate<QuizResult>({
+          route: "result",
+          state: {
+            correctAnswer: this.service.correctCount,
+            incorrectAnswer: this.service.incorrectCount,
+          },
+        });
+        return;
+      }
+
       const timerComponent = this.renderTimer();
       const answerComponent = this.renderAnswer(currentQuiz);
 
@@ -111,6 +134,9 @@ export class QuizPageComponent extends Component<{
       const orderElement = this.element.querySelector(
         ".quiz__order"
       ) as HTMLElement;
+
+      contentElement.classList.remove("none");
+      loadingOverlay.classList.add("none");
 
       orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
 

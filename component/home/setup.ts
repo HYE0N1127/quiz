@@ -4,8 +4,6 @@ import { Category } from "../../type/category.js";
 import { Component } from "../component.js";
 
 export class SetupComponent extends Component<{ categories: Category[] }> {
-  private readonly repository: QuizRepository;
-
   constructor() {
     super(
       `
@@ -51,12 +49,12 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
       }
     );
 
-    this.repository = new QuizRepository();
+    this.mount();
   }
 
   public componentDidMount = async () => {
     try {
-      const value = await this.repository.getCategories();
+      const value = await new QuizRepository().getCategories();
 
       this.state.value = {
         categories: value,
