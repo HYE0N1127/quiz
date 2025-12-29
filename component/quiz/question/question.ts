@@ -19,6 +19,7 @@ export class QuizPageComponent extends Component<{
 }> {
   private repository: QuizRepository;
   private service: QuizService;
+  private timer: Timer;
 
   constructor() {
     super(
@@ -45,6 +46,7 @@ export class QuizPageComponent extends Component<{
 
     this.repository = new QuizRepository();
     this.service = new QuizService([]);
+    this.timer = new Timer(10, 100);
   }
 
   public componentDidMount = async () => {
@@ -81,6 +83,8 @@ export class QuizPageComponent extends Component<{
   };
 
   public render(): void {
+    this.timer.stop();
+
     if (this.service.isFinish) {
       navigate({
         route: "result",
@@ -95,22 +99,8 @@ export class QuizPageComponent extends Component<{
     const { currentQuiz } = this.state.value;
 
     if (currentQuiz) {
-      const timerUpdate = this.renderTimer();
-      const answerComponent = this.renderAnswer(currentQuiz, (isCorrect) => {
-        timer.stop();
-        this.onSubmit(isCorrect);
-      });
-
-      const timer = new Timer(
-        10,
-        100,
-        (percent: number) => {
-          timerUpdate(percent);
-        },
-        () => {
-          answerComponent.timeout();
-        }
-      );
+      const timerComponent = this.renderTimer();
+      const answerComponent = this.renderAnswer(currentQuiz);
 
       this.renderDifficulty(currentQuiz);
 
@@ -125,7 +115,15 @@ export class QuizPageComponent extends Component<{
 
       titleElement.textContent = decodeHtml(currentQuiz.question);
 
-      timer.start();
+      this.timer.start(
+        (percent: number) => {
+          timerComponent.update(percent);
+        },
+        () => {
+          console.log("submit at timer timeover");
+          answerComponent.timeout();
+        }
+      );
     }
   }
 
@@ -138,18 +136,19 @@ export class QuizPageComponent extends Component<{
 
     timerComponent.attachTo(element);
 
-    return (percent: number) => timerComponent.update(percent);
+    return timerComponent;
   };
 
-  private renderAnswer = (
-    quiz: Quiz,
-    callback: (isCorrect: boolean) => void
-  ) => {
+  private renderAnswer = (quiz: Quiz) => {
     const element = this.element.querySelector(".quiz__answer") as HTMLElement;
 
     element.innerHTML = "";
 
-    const answer = new AnswerComponent(quiz, callback);
+    const answer = new AnswerComponent(quiz, (isCorrect) => {
+      console.log("click submit");
+      this.timer.stop();
+      this.onSubmit(isCorrect);
+    });
 
     answer.attachTo(element);
 

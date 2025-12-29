@@ -62,4 +62,12 @@ export class QuizService {
   public getCurrentQuiz(): Quiz {
     return this._quizzes[this._order]!;
   }
+
+  public checkAnswer(picked?: string): boolean {
+    if (!picked) {
+      return false;
+    }
+
+    return picked === this._quizzes[this._order]?.correctAnswer;
+  }
 }
