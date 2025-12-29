@@ -27,20 +27,17 @@ export class Component<T> {
     });
 
     this.render?.();
-
-    setTimeout(() => {
-      this.componentDidMount?.();
-    }, 0);
   }
 
   public get state(): State<T> {
     return this._state;
   }
 
-  public attachTo(
+  public mount(
     parent: HTMLElement,
     position: InsertPosition = "beforeend"
   ): void {
     parent.insertAdjacentElement(position, this.element);
+    this.componentDidMount?.();
   }
 }

@@ -147,7 +147,7 @@ export class QuizPageComponent extends Component<{
 
     const timerComponent = new ProgressComponent();
 
-    timerComponent.attachTo(element);
+    timerComponent.mount(element);
 
     return timerComponent;
   };
@@ -162,7 +162,7 @@ export class QuizPageComponent extends Component<{
       this.onSubmit(isCorrect);
     });
 
-    answer.attachTo(element);
+    answer.mount(element);
 
     return answer;
   };

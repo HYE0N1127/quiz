@@ -4,7 +4,7 @@ const render = () => {
   const main = document.querySelector("#root") as HTMLBodyElement;
   const resultPageComponent = new ResultPageComponent();
 
-  resultPageComponent.attachTo(main);
+  resultPageComponent.mount(main);
 };
 
 render();
