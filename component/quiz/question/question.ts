@@ -7,6 +7,7 @@ import { Quiz } from "../../../model/quiz.js";
 import { navigate } from "../../../lib/html/route.js";
 import { Timer } from "../../../lib/timer/timer.js";
 import { ProgressComponent } from "../timer/progress.js";
+import { QuizResult } from "../../../type/result.js";
 
 const CIRCLES = {
   easy: 1,
@@ -86,9 +87,9 @@ export class QuizPageComponent extends Component<{
     this.timer.stop();
 
     if (this.service.isFinish) {
-      navigate({
+      navigate<QuizResult>({
         route: "result",
-        query: {
+        state: {
           correctAnswer: this.service.correctCount,
           incorrectAnswer: this.service.incorrectCount,
         },

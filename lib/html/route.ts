@@ -1,12 +1,14 @@
+import { SESSION_STORAGE_QUIZ_RESULT_KEY } from "../../constants/storage.js";
 import { querify } from "../http/query.js";
 
-type NavigateOptions = {
+type NavigateOptions<T = unknown> = {
   route: "home" | "result" | "quiz";
   query?: Record<string, string | number | boolean>;
+  state?: T;
 };
 
-export const navigate = (options: NavigateOptions): void => {
-  const { route, query } = options;
+export const navigate = <T>(options: NavigateOptions<T>): void => {
+  const { route, query, state } = options;
 
   let path: string = "";
 
@@ -22,6 +24,13 @@ export const navigate = (options: NavigateOptions): void => {
       break;
     default:
       path = "";
+  }
+
+  if (state != null && route === "result") {
+    sessionStorage.setItem(
+      SESSION_STORAGE_QUIZ_RESULT_KEY,
+      JSON.stringify(state)
+    );
   }
 
   window.location.href = `${window.location.origin}${path}${querify(
