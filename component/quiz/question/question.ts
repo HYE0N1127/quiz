@@ -98,20 +98,12 @@ export class QuizPageComponent extends Component<{
 
     const { currentQuiz, isLoading } = this.state.value;
 
-    const loadingOverlay = this.element.querySelector(
-      ".loading__container"
-    ) as HTMLElement;
-
-    const contentElement = this.element.querySelector(
-      ".quiz__content"
-    ) as HTMLElement;
-
-    loadingOverlay.classList.toggle("none", !isLoading);
-    contentElement.classList.toggle("none", isLoading);
+    this.toggleOverlay(isLoading ?? false);
 
     if (isLoading) {
       return;
     }
+
     if (this.service.isFinish) {
       navigate<QuizResult>({
         route: "result",
@@ -136,11 +128,7 @@ export class QuizPageComponent extends Component<{
         ".quiz__order"
       ) as HTMLElement;
 
-      contentElement.classList.remove("none");
-      loadingOverlay.classList.add("none");
-
       orderElement.textContent = `${this.service.order} / ${this.service.amount}`;
-
       titleElement.textContent = decodeHtml(currentQuiz.question);
 
       this.timer.start(
@@ -200,6 +188,19 @@ export class QuizPageComponent extends Component<{
 
     element.append(...elements);
   };
+
+  private toggleOverlay(isLoading: boolean) {
+    const loadingOverlay = this.element.querySelector(
+      ".loading__container"
+    ) as HTMLElement;
+
+    const contentElement = this.element.querySelector(
+      ".quiz__content"
+    ) as HTMLElement;
+
+    loadingOverlay.classList.toggle("none", !isLoading);
+    contentElement.classList.toggle("none", isLoading);
+  }
 
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
