@@ -28,8 +28,6 @@ export class ResultPageComponent extends Component<{
 
     if (!raw) return undefined;
 
-    sessionStorage.removeItem(SESSION_STORAGE_QUIZ_RESULT_KEY);
-
     try {
       return JSON.parse(raw) as QuizResult;
     } catch {
@@ -78,6 +76,7 @@ export class ResultPageComponent extends Component<{
     countElement.textContent = `정답 갯수: ${correctAnswer}개, 오답 갯수: ${incorrectAnswer}개`;
 
     backButtonElement.onclick = () => {
+      sessionStorage.removeItem(SESSION_STORAGE_QUIZ_RESULT_KEY);
       navigate({ route: "home" });
     };
   }

@@ -121,7 +121,6 @@ export class QuizPageComponent extends Component<{
           timerComponent.update(percent);
         },
         () => {
-          console.log("submit at timer timeover");
           answerComponent.timeout();
         }
       );
@@ -146,7 +145,6 @@ export class QuizPageComponent extends Component<{
     element.innerHTML = "";
 
     const answer = new AnswerComponent(quiz, (isCorrect) => {
-      console.log("click submit");
       this.timer.stop();
       this.onSubmit(isCorrect);
     });

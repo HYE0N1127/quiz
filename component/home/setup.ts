@@ -80,14 +80,6 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
 
     categoryElement.append(...elements);
 
-    // form.addEventListener("click", function () {
-    //   console.log(this);
-    // });
-
-    // form.addEventListener("click", () => {
-    //   console.log(this);
-    // })
-
     form.onsubmit = (e) => {
       e.preventDefault();
 
