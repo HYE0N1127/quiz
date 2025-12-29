@@ -21,6 +21,8 @@ export class ResultPageComponent extends Component<{
         incorrectAnswer: 0,
       }
     );
+
+    this.mount();
   }
 
   private parseSessionStorageData = <QuizResult>(): QuizResult | undefined => {

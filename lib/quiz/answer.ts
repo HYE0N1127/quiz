@@ -6,7 +6,6 @@ export class QuizService {
   private _order: number;
   private _correctCount: number;
   private _incorrectCount: number;
-  private _isLoaded: boolean = false;
 
   constructor(_quizzes: Quiz[]) {
     this._quizzes = _quizzes;
@@ -32,12 +31,11 @@ export class QuizService {
   }
 
   public get isFinish(): boolean {
-    return this._isLoaded && this._quizzes.length < this._order + 1;
+    return this._quizzes.length < this._order + 1;
   }
 
   public set quizzes(value: Quiz[]) {
     this._quizzes = value;
-    this._isLoaded = true;
     this._order = 0;
   }
 

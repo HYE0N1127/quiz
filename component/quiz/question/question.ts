@@ -68,8 +68,9 @@ export class QuizPageComponent extends Component<{
 
       this.service.quizzes = value;
 
+      await this.delay(1000);
+
       this.state.value = {
-        isLoading: false,
         currentQuiz: this.service.getCurrentQuiz(),
       };
     } catch (error) {
@@ -86,6 +87,7 @@ export class QuizPageComponent extends Component<{
     this.service.setAnswerCount(isCorrect);
     this.state.value = {
       currentQuiz: this.service.getNextQuiz(),
+      isLoading: false,
     };
   };
 
@@ -110,19 +112,18 @@ export class QuizPageComponent extends Component<{
     if (isLoading) {
       return;
     }
+    if (this.service.isFinish) {
+      navigate<QuizResult>({
+        route: "result",
+        state: {
+          correctAnswer: this.service.correctCount,
+          incorrectAnswer: this.service.incorrectCount,
+        },
+      });
+      return;
+    }
 
     if (currentQuiz) {
-      if (this.service.isFinish) {
-        navigate<QuizResult>({
-          route: "result",
-          state: {
-            correctAnswer: this.service.correctCount,
-            incorrectAnswer: this.service.incorrectCount,
-          },
-        });
-        return;
-      }
-
       const timerComponent = this.renderTimer();
       const answerComponent = this.renderAnswer(currentQuiz);
 
@@ -199,4 +200,8 @@ export class QuizPageComponent extends Component<{
 
     element.append(...elements);
   };
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 }
