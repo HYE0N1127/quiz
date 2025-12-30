@@ -23,7 +23,7 @@ export class ResultPageComponent extends Component<{
     );
   }
 
-  private parseSessionStorageData = <QuizResult>(): QuizResult | undefined => {
+  private parseSessionStorageData<QuizResult>(): QuizResult | undefined {
     const raw = sessionStorage.getItem(SESSION_STORAGE_QUIZ_RESULT_KEY);
 
     if (!raw) return undefined;
@@ -33,9 +33,9 @@ export class ResultPageComponent extends Component<{
     } catch {
       return undefined;
     }
-  };
+  }
 
-  public componentDidMount = () => {
+  public componentDidMount() {
     const payload = this.parseSessionStorageData<QuizResult>();
 
     if (payload == null) {
@@ -48,7 +48,7 @@ export class ResultPageComponent extends Component<{
       correctAnswer: Number(payload.correctAnswer),
       incorrectAnswer: Number(payload.incorrectAnswer),
     };
-  };
+  }
 
   private calculateScore(correctCount: number, incorrectCount: number): string {
     const score = (correctCount / (correctCount + incorrectCount)) * 100;

@@ -4,7 +4,7 @@ const render = (): void => {
   const root = document.querySelector("#root") as HTMLBodyElement;
   const quizComponent = new QuizPageComponent();
 
-  quizComponent.mount(root);
+  quizComponent.attachTo(root);
 };
 
 render();

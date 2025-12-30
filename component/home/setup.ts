@@ -50,7 +50,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
     );
   }
 
-  public componentDidMount = async () => {
+  public async componentDidMount() {
     try {
       const value = await new QuizRepository().getCategories();
 
@@ -61,7 +61,7 @@ export class SetupComponent extends Component<{ categories: Category[] }> {
       console.error(e);
       alert("서버 통신에 실패하였습니다. 새로고침해주세요.");
     }
-  };
+  }
 
   public render(): void {
     const { categories } = this.state.value;

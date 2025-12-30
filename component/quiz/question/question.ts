@@ -17,7 +17,7 @@ const CIRCLES = {
 
 export class QuizPageComponent extends Component<{
   currentQuiz: Quiz | undefined;
-  isLoading?: boolean;
+  isLoading: boolean;
 }> {
   private service: QuizService;
   private timer: Timer;
@@ -53,7 +53,7 @@ export class QuizPageComponent extends Component<{
     this.timer = new Timer(10, 100);
   }
 
-  public componentDidMount = async () => {
+  public async componentDidMount() {
     const query = new URLSearchParams(window.location.search);
     const payload = Object.fromEntries(query.entries());
 
@@ -66,9 +66,8 @@ export class QuizPageComponent extends Component<{
 
       this.service.quizzes = value;
 
-      await this.delay(1000);
-
       this.state.value = {
+        isLoading: false,
         currentQuiz: this.service.getCurrentQuiz(),
       };
     } catch (error) {
@@ -77,17 +76,17 @@ export class QuizPageComponent extends Component<{
       alert("알 수 없는 에러가 발생하였습니다.");
       navigate({ route: "home" });
     }
-  };
+  }
 
-  private onSubmit = async (isCorrect: boolean) => {
+  private async onSubmit(isCorrect: boolean) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     this.service.setAnswerCount(isCorrect);
     this.state.value = {
+      ...this.state.value,
       currentQuiz: this.service.getNextQuiz(),
-      isLoading: false,
     };
-  };
+  }
 
   public render(): void {
     if (this.timer) {
@@ -96,7 +95,7 @@ export class QuizPageComponent extends Component<{
 
     const { currentQuiz, isLoading } = this.state.value;
 
-    this.toggleOverlay(isLoading ?? false);
+    this.toggleOverlay(isLoading);
 
     if (isLoading) {
       return;
@@ -134,25 +133,26 @@ export class QuizPageComponent extends Component<{
           timerComponent.update(percent);
         },
         () => {
+          this.timer.stop();
           answerComponent.timeout();
         }
       );
     }
   }
 
-  private renderTimer = () => {
+  private renderTimer() {
     const element = this.element.querySelector(".quiz__timer") as HTMLElement;
 
     element.innerHTML = "";
 
     const timerComponent = new ProgressComponent();
 
-    timerComponent.mount(element);
+    timerComponent.attachTo(element);
 
     return timerComponent;
-  };
+  }
 
-  private renderAnswer = (quiz: Quiz) => {
+  private renderAnswer(quiz: Quiz) {
     const element = this.element.querySelector(".quiz__answer") as HTMLElement;
 
     element.innerHTML = "";
@@ -162,12 +162,12 @@ export class QuizPageComponent extends Component<{
       this.onSubmit(isCorrect);
     });
 
-    answer.mount(element);
+    answer.attachTo(element);
 
     return answer;
-  };
+  }
 
-  private renderDifficulty = (quiz: Quiz): void => {
+  private renderDifficulty(quiz: Quiz): void {
     const element = this.element.querySelector(
       ".quiz__difficulty"
     ) as HTMLElement;
@@ -185,7 +185,7 @@ export class QuizPageComponent extends Component<{
     });
 
     element.append(...elements);
-  };
+  }
 
   private toggleOverlay(isLoading: boolean) {
     const loadingOverlay = this.element.querySelector(
@@ -198,9 +198,5 @@ export class QuizPageComponent extends Component<{
 
     loadingOverlay.classList.toggle("none", !isLoading);
     contentElement.classList.toggle("none", isLoading);
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

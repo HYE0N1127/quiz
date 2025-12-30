@@ -4,7 +4,7 @@ const render = () => {
   const root = document.querySelector("#root") as HTMLBodyElement;
   const setupForm = new SetupComponent();
 
-  setupForm.mount(root);
+  setupForm.attachTo(root);
 };
 
 render();
